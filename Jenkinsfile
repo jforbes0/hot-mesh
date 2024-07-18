@@ -10,7 +10,7 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'pip install -r requirements.txt'
+                sh 'pip install -r flask_app/requirements.txt'
             }
         }
 
@@ -37,7 +37,7 @@ pipeline {
                     // SSH into the production server and start the application
                     sh """
                     ssh ${prodServer} '
-                    cd ${deployPath} &&
+                    cd ${deployPath}/flask_app &&
                     pip install -r requirements.txt &&
                     nohup python app.py > app.log 2>&1 &
                     '
