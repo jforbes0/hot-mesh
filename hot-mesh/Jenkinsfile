@@ -1,0 +1,32 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'pip install -r requirements.txt'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh 'pytest'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                // Add your deployment steps here
+                echo 'Deploying application...'
+                // Example deployment command
+                // sh 'scp -r * user@your-prod-server:/path/to/deployment'
+            }
+        }
+    }
+}
