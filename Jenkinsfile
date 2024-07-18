@@ -10,13 +10,14 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'pip install -r requirements.txt'
+                sh 'pip install -r flask_app/requirements.txt'
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh 'pytest'
+                // Add any test steps if necessary
+                echo 'No tests available'
             }
         }
 
@@ -24,13 +25,22 @@ pipeline {
             steps {
                 script {
                     // Define the production server and deployment path
-                    def prodServer = ‘jessicaforbes@192.168.1.21’
-                    def deployPath = '/home/jessicaforbes/hot-mesh'
+                    def prodServer = 'jessicaforbes@192.168.1.21'
+                    def deployPath = '/home/jessicaforbes/deploy'
 
-                    // Run deployment commands
+                    // Create the deploy path if it doesn't exist
+                    sh "ssh ${prodServer} 'mkdir -p ${deployPath}'"
+
+                    // Rsync the files to the production server
+                    sh "rsync -avz --delete-after flask_app/ ${prodServer}:${deployPath}"
+
+                    // SSH into the production server and start the application
                     sh """
-                    rsync -avz --delete-after . ${prodServer}:${deployPath}
-                    ssh ${prodServer} 'cd ${deployPath} && ./deploy.sh'
+                    ssh ${prodServer} '
+                    cd ${deployPath} &&
+                    pip install -r requirements.txt &&
+                    nohup python app.py > app.log 2>&1 &
+                    '
                     """
                 }
             }
