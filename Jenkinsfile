@@ -32,7 +32,7 @@ pipeline {
                     sh "ssh ${prodServer} 'mkdir -p ${deployPath}'"
 
                     // Rsync the files to the production server
-                    sh "rsync -avz --delete-after flask_app/ ${prodServer}:${deployPath}"
+                    sh "rsync -avz --delete-after . ${prodServer}:${deployPath}"
 
                     // SSH into the production server and start the application
                     sh """
