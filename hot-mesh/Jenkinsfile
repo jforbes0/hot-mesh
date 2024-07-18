@@ -20,12 +20,19 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy to Production') {
             steps {
-                // Add your deployment steps here
-                echo 'Deploying application...'
-                // Example deployment command
-                // sh 'scp -r * user@your-prod-server:/path/to/deployment'
+                script {
+                    // Define the production server and deployment path
+                    def prodServer = ‘jessicaforbes@192.168.1.21’
+                    def deployPath = '/home/jessicaforbes/hot-mesh'
+
+                    // Run deployment commands
+                    sh """
+                    rsync -avz --delete-after . ${prodServer}:${deployPath}
+                    ssh ${prodServer} 'cd ${deployPath} && ./deploy.sh'
+                    """
+                }
             }
         }
     }
